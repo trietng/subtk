@@ -25,10 +25,8 @@ var (
 )
 
 var (
-	// regex to extract title, season and year from a file name
-	// e.g. "The.Fall.of.the.House.of.Usher.(2023).S01E01.A.Midnight.Dreary.1080p.NF.WEB-DL.10bit.DDP5.1.Atmos.x265-YELLO"
-	// or "The Fall of the House of Usher 2023 1x1"
-	r = regexp.MustCompile(`(?i)(?:season\s*|s)(\d+)(?:e\d+|x\d+|)`)
+	// regex to extract season from a file name
+	seasonRegexp = regexp.MustCompile(`(?i)(?:season\s*|s)(\d+)(?:e\d+|x\d+|)`)
 )
 
 func (a *Matcher) Match() (*common.MediaInfo, error) {
@@ -46,7 +44,7 @@ func (a *Matcher) Match() (*common.MediaInfo, error) {
 		ext := filepath.Ext(file.Name())
 		if _, ok := SupportedFileTypes[ext]; ok {
 			report.Title = strings.TrimSuffix(file.Name(), ext)
-			matches := r.FindStringSubmatch(report.Title)
+			matches := seasonRegexp.FindStringSubmatch(report.Title)
 			if len(matches) > 1 {
 				report.Season, err = strconv.Atoi(matches[1])
 				if err != nil {

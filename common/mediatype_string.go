@@ -10,11 +10,12 @@ func _() {
 	var x [1]struct{}
 	_ = x[Movie-0]
 	_ = x[TV-1]
+	_ = x[Other-2]
 }
 
-const _MediaType_name = "MovieTV"
+const _MediaType_name = "MovieTVOther"
 
-var _MediaType_index = [...]uint8{0, 5, 7}
+var _MediaType_index = [...]uint8{0, 5, 7, 12}
 
 func (i MediaType) String() string {
 	if i >= MediaType(len(_MediaType_index)-1) {
