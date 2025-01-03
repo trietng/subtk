@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-	"trietng/subtk/config"
 	"trietng/subtk/search/datasources"
 	"trietng/subtk/search/errmsg"
 	"trietng/subtk/search/merger"
@@ -18,8 +17,6 @@ type SubtitleSearchEngine struct {
 }
 
 func NewSubtitleSearchEngine(query string, mergeStrategy string) *SubtitleSearchEngine {
-	// load configuration on startup
-	config.LoadConfig()
 	// create data sources
 	// 1. subdl
 	subdl := datasources.NewSubdlDataSource(query)

@@ -17,7 +17,6 @@ func Run(mod string) {
 	mod = strings.ToLower(mod)
 	switch mod {
 	case module.Config:
-		config.LoadConfig()
 		if *flags.ConfigFlags.ApiKeyList {
 			serialized, _ := json.MarshalIndent(config.GetApiKeys(), "", "  ")
 			fmt.Println(string(serialized))

@@ -15,8 +15,8 @@ import (
 // └── resource_group_2
 // ...
 // └── metadata
-// metadata: a binary file that stores metadata of resources
-// resource_group_<n>: a directory that contains resources of the same type
+// metadata: a binary file that stores metadata of resources and also acts as a lock file
+// resource_group: a directory that contains resources of the same type
 // resource: a resource file
 var (
 	// metadata map: map[resource_group][resource]timestamp
@@ -24,7 +24,11 @@ var (
 	lock     sync.Mutex
 )
 
-func LoadExternalMetadata() (common.CommonSignal, error) {
+func init() {
+	LoadMetadata()
+}
+
+func LoadMetadata() (common.CommonSignal, error) {
 	lock.Lock()
 	defer lock.Unlock()
 	if metadata != nil {
@@ -35,3 +39,4 @@ func LoadExternalMetadata() (common.CommonSignal, error) {
 	os.MkdirAll(fmt.Sprintf("%s/.subtk/resources", home), 0755)
 	return common.SUBTK_INIT, nil
 }
+

@@ -13,8 +13,6 @@ var (
 	// config map
 	config map[string]interface{}
 	lock   sync.Mutex
-	// warning messages
-	warningConfigAlreadyLoaded = "warning: Config already loaded"
 	// error messages
 	errorUnableToLoadConfigFile = fmt.Errorf("error: Unable to load config file")
 	errorUnableToSaveConfigFile = fmt.Errorf("error: Unable to save config file")
@@ -25,12 +23,15 @@ const (
 	defaultLanguageKey = "default_language"
 )
 
+func init() {
+	LoadConfig()
+}
+
 func LoadConfig() (common.CommonSignal, error) {
 	lock.Lock()
 	defer lock.Unlock()
 	var configSignal common.CommonSignal
 	if config != nil {
-		fmt.Println(warningConfigAlreadyLoaded)
 		configSignal = common.SUBTK_DUPLICATED
 		return configSignal, nil
 	}
