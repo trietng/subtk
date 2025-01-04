@@ -7,13 +7,9 @@ import (
 	"slices"
 	"strconv"
 	"sync"
-
-	//"fmt"
 	"net/http"
 	"net/url"
 	"trietng/subtk/config"
-
-	//"trietng/subtk/search"
 	"trietng/subtk/search/result"
 )
 
@@ -108,7 +104,6 @@ func (ds *SubdlDataSource) Search() ([]result.SubtitleSearchResult, error) {
 								channel <- score
 							}
 						}
-						channel <- -1
 					}
 				}
 			}(&searchResult)
