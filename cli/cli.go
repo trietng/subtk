@@ -9,6 +9,7 @@ import (
 	"trietng/subtk/cli/module"
 	"trietng/subtk/config"
 	"trietng/subtk/match"
+	"trietng/subtk/repair"
 	"trietng/subtk/search"
 )
 
@@ -38,6 +39,11 @@ func Run(mod string) {
 			// unset the api key
 			config.UnsetApiKey(*flags.ConfigFlags.ApiKeyUnset)
 			config.SaveConfig()
+		}
+	case module.Repair:
+		if *flags.RepairFlags.Resource {
+			// reset all resources
+			repair.ResetResources()
 		}
 	case module.Match:
 		analyzer := match.Matcher{}

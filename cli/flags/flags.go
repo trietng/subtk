@@ -8,6 +8,14 @@ import (
 // declare flags
 var (
 	// flags for each module
+	ConfigFlags struct {
+		ApiKeyList     *bool
+		ApiKeySet      *string
+		ApiKeyUnset    *string
+	}
+	RepairFlags struct {
+		Resource *bool
+	}
 	SearchFlags struct {
 		Query           *string
 		MergeStrategy   *string
@@ -19,11 +27,6 @@ var (
 		Destination    *string
 		ExtractArchive *bool
 	}
-	ConfigFlags struct {
-		ApiKeyList     *bool
-		ApiKeySet      *string
-		ApiKeyUnset    *string
-	}
 )
 
 // sets flags for the specified module
@@ -33,6 +36,8 @@ func SetModuleFlags(mod string) {
 		ConfigFlags.ApiKeyList = flag.Bool("al", false, "list all api keys")
 		ConfigFlags.ApiKeySet = flag.String("as", "", "api key to set <provider>:<api_key>")
 		ConfigFlags.ApiKeyUnset = flag.String("au", "", "api key to unset")
+	case module.Repair:
+		RepairFlags.Resource = flag.Bool("r", false, "reset all resources")
 	case module.Search:
 		SearchFlags.Query = flag.String("q", "", "query to search; leave empty for auto search")
 		SearchFlags.MergeStrategy = flag.String("ms", "first", "merge strategy to use when merging search results")
