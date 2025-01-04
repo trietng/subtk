@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"strings"
 	"trietng/subtk/cli/errmsg"
@@ -39,11 +40,15 @@ func Run(mod string) {
 			// unset the api key
 			config.UnsetApiKey(*flags.ConfigFlags.ApiKeyUnset)
 			config.SaveConfig()
+		} else {
+			goto ManualHelp
 		}
 	case module.Repair:
 		if *flags.RepairFlags.Resource {
 			// reset all resources
 			repair.ResetResources()
+		} else {
+			goto ManualHelp
 		}
 	case module.Match:
 		analyzer := match.Matcher{}
@@ -69,4 +74,8 @@ func Run(mod string) {
 	default:
 		fmt.Println(errmsg.ErrInvalidModule)
 	}
+	return
+ManualHelp:
+	fmt.Printf("Usage of %s:\n", mod)
+	flag.PrintDefaults()
 }
