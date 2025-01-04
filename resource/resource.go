@@ -3,6 +3,7 @@ package resource
 import (
 	"encoding/gob"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"math"
 	"os"
@@ -15,8 +16,9 @@ import (
 // NOTE: no versioning for metadata at the moment
 type Metadata struct {
 	DataType       string
-	Timestamp      int64 // in seconds
-	UpdateInterval int64 // in seconds
+	Timestamp      int64  // in seconds
+	UpdateInterval int64  // in seconds
+	Checksum       uint32 // CRC-32 checksum of the resource file
 }
 
 const (
@@ -27,6 +29,7 @@ const (
 	// value to use when the update interval is zero
 	UPDATE_IMMEDIATE = 0
 )
+
 // organization of resources
 // resources
 // ├── resource_group_1
@@ -34,7 +37,7 @@ const (
 // │   └── resource_2
 // └── resource_group_2
 // ...
-// └── metadata
+// └── metadata.gob
 // metadata.gob: a binary file that stores metadata of resources and also acts as a lock file
 // resource_group: a directory that contains resources of the same type
 // resource: a resource file
@@ -97,6 +100,15 @@ func LoadMetadata() (common.CommonSignal, error) {
 					if rf, err := os.Stat(fmt.Sprintf("%s/.subtk/resources/%s/%s.gob", home, group, resource)); err == nil {
 						if rf.IsDir() {
 							return common.SUBTK_ERROR, errmsg.ErrResourceIntegrityCheckFailed(group, resource)
+						} else {
+							// check if the checksum is correct
+							bs, err := os.ReadFile(fmt.Sprintf("%s/.subtk/resources/%s/%s.gob", home, group, resource))
+							if err != nil {
+								return common.SUBTK_ERROR, errmsg.ErrResourceIntegrityCheckFailed(group, resource)
+							}
+							if crc32.ChecksumIEEE(bs) != metadata[group][resource].Checksum {
+								return common.SUBTK_ERROR, errmsg.ErrResourceIntegrityCheckFailed(group, resource)
+							}
 						}
 					} else {
 						return common.SUBTK_ERROR, errmsg.ErrResourceIntegrityCheckFailed(group, resource)
@@ -131,12 +143,21 @@ func SetResource[T any](group, resource string, data T, updateInterval int64) er
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 	encoder := gob.NewEncoder(file)
 	err = encoder.Encode(data)
 	if err != nil {
 		return err
 	}
+	// close the file to flush the data to disk
+	file.Close()
+	// generate checksum for the resource file
+	bs, err := os.ReadFile(fmt.Sprintf("%s/.subtk/resources/%s/%s.gob", home, group, resource))
+	if err != nil {
+		return err
+	}
+	tempMetadata := metadata[group][resource]
+	tempMetadata.Checksum = crc32.ChecksumIEEE(bs)
+	metadata[group][resource] = tempMetadata
 	metadataFile, err := os.OpenFile(fmt.Sprintf("%s/.subtk/resources/metadata.gob", home), os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return err
