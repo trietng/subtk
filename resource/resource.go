@@ -23,7 +23,7 @@ type Metadata struct {
 
 const (
 	// default update interval for resources (1 month)
-	UPDATE_DEFAULT_INTERVAL = 2592000 // 30 days
+	UPDATE_DEFAULT = 2592000 // 30 days
 	// value to use when the update interval is not required
 	UPDATE_NOT_REQUIRED = math.MaxInt64
 	// value to use when the update interval is zero
@@ -49,8 +49,8 @@ var (
 
 func newMetadata[T any](data *T, updateInterval int64) *Metadata {
 	return &Metadata{
-		DataType:  fmt.Sprintf("%T", *data),
-		Timestamp: time.Now().Unix(),
+		DataType:       fmt.Sprintf("%T", *data),
+		Timestamp:      time.Now().Unix(),
 		UpdateInterval: updateInterval,
 	}
 }
@@ -191,7 +191,7 @@ func GetResource[T any](group, resource string) (*T, common.ResourceSignal) {
 						return nil, common.RESOURCE_ERROR
 					}
 					// check if the resource is outdated
-					if mr.UpdateInterval != UPDATE_NOT_REQUIRED && time.Now().Unix() - mr.Timestamp > mr.UpdateInterval {
+					if mr.UpdateInterval != UPDATE_NOT_REQUIRED && time.Now().Unix()-mr.Timestamp > mr.UpdateInterval {
 						return &data, common.RESOURCE_OUTDATED
 					}
 					return &data, common.RESOURCE_OK

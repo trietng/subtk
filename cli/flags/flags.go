@@ -2,6 +2,7 @@ package flags
 
 import (
 	"flag"
+	"os"
 	"trietng/subtk/cli/module"
 )
 
@@ -9,9 +10,10 @@ import (
 var (
 	// flags for each module
 	ConfigFlags struct {
-		ApiKeyList     *bool
-		ApiKeySet      *string
-		ApiKeyUnset    *string
+		ApiKeyList         *bool
+		ApiKeySet          *string
+		ApiKeyUnset        *string
+		DefaultLanguageSet *string
 	}
 	RepairFlags struct {
 		Resource *bool
@@ -36,6 +38,7 @@ func SetModuleFlags(mod string) {
 		ConfigFlags.ApiKeyList = flag.Bool("al", false, "list all api keys")
 		ConfigFlags.ApiKeySet = flag.String("as", "", "api key to set <provider>:<api_key>")
 		ConfigFlags.ApiKeyUnset = flag.String("au", "", "api key to unset")
+		ConfigFlags.DefaultLanguageSet = flag.String("dls", "", "default language to set, must be a valid ISO 639-1 language code")
 	case module.Repair:
 		RepairFlags.Resource = flag.Bool("r", false, "reset all resources")
 	case module.Search:
@@ -44,7 +47,11 @@ func SetModuleFlags(mod string) {
 		SearchFlags.HearingImpaired = flag.Bool("hi", false, "whether to include hearing impaired subtitles")
 	case module.Download:
 		DownloadFlags.Query = flag.String("q", "", "query to search and download; leave empty for auto search")
-		DownloadFlags.Destination = flag.String("d", "./", "destination path to download the subtitle to")
+		dir, err := os.Getwd()
+		if err != nil {
+			dir = ""
+		}
+		DownloadFlags.Destination = flag.String("d", dir, "destination path to download the subtitle to")
 		DownloadFlags.ExtractArchive = flag.Bool("ea", true, "whether to extract the downloaded archive")
 		DownloadFlags.Url = flag.String("u", "", "direct url of the subtitle to download")
 	}

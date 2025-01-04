@@ -11,9 +11,9 @@ import (
 	"trietng/subtk/resource/languages/iso639"
 )
 
-type SubdlSupportedLanguages struct{}
+type SubdlLanguagesRepository struct{}
 
-func (s SubdlSupportedLanguages) GetSupportedLanguages() map[string]struct{} {
+func (s SubdlLanguagesRepository) GetSupportedLanguages() map[string]struct{} {
 	// check if resouce file for subdl supported languages exists
 	// if not, create it
 	if supportedLanguages, sig := resource.GetResource[map[string]struct{}]("languages", "subdl"); sig == common.RESOURCE_OK {
@@ -39,7 +39,7 @@ func (s SubdlSupportedLanguages) GetSupportedLanguages() map[string]struct{} {
 		// intersect with iso639-1
 		intersectedLanguages := setops.Intersect(remoteLanguages, setops.Mtos(iso639.Set1))
 		// save to resource file
-		resource.SetResource("languages", "subdl", intersectedLanguages, resource.UPDATE_DEFAULT_INTERVAL)
+		resource.SetResource("languages", "subdl", intersectedLanguages, resource.UPDATE_DEFAULT)
 		return intersectedLanguages
 	}
 }

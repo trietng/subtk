@@ -7,6 +7,7 @@ import (
 	"os"
 	"sync"
 	"trietng/subtk/common"
+	"trietng/subtk/resource/languages/fallback"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 )
 
 const (
-	apikeysKey         = "apikeys"
+	apikeysKey         = "api_keys"
 	defaultLanguageKey = "default_language"
 )
 
@@ -130,9 +131,9 @@ func SetDefaultLanguage(lang string) {
 	setConfig(defaultLanguageKey, lang)
 }
 
-func GetDefaultLanguage(lang string) (string, bool) {
+func GetDefaultLanguage() string {
 	if value, ok := getConfig(defaultLanguageKey); ok {
-		return value.(string), ok
+		return value.(string)
 	}
-	return "", false
+	return fallback.DefaultLanguage
 }

@@ -7,6 +7,7 @@ import (
 	"trietng/subtk/search/datasources"
 	"trietng/subtk/search/errmsg"
 	"trietng/subtk/search/merger"
+	"trietng/subtk/search/query"
 	"trietng/subtk/search/result"
 )
 
@@ -16,10 +17,10 @@ type SubtitleSearchEngine struct {
 	mergeStrategy string
 }
 
-func NewSubtitleSearchEngine(query string, mergeStrategy string) *SubtitleSearchEngine {
+func NewSubtitleSearchEngine(q string, mergeStrategy string, metadata query.QueryMetadata) *SubtitleSearchEngine {
 	// create data sources
 	// 1. subdl
-	subdl := datasources.NewSubdlDataSource(query)
+	subdl := datasources.NewSubdlDataSource(q, metadata)
 	// register data sources
 	dataSources := []datasources.DataSource{
 		subdl,
@@ -28,7 +29,7 @@ func NewSubtitleSearchEngine(query string, mergeStrategy string) *SubtitleSearch
 	mergeStrategy = strings.ToLower(mergeStrategy)
 	// return the search engine
 	return &SubtitleSearchEngine{
-		query: query,
+		query: q,
 		dataSources: dataSources,
 		mergeStrategy: mergeStrategy,
 	}

@@ -12,6 +12,7 @@ import (
 	"trietng/subtk/match"
 	"trietng/subtk/repair"
 	"trietng/subtk/search"
+	"trietng/subtk/search/query"
 )
 
 func Run(mod string) {
@@ -52,7 +53,7 @@ func Run(mod string) {
 		}
 	case module.Match:
 		analyzer := match.Matcher{}
-		report, err := analyzer.Match()
+		report, err := analyzer.MatchFile()
 		if err != nil {
 			fmt.Println(err)
 		} else {
@@ -63,6 +64,7 @@ func Run(mod string) {
 		searchEngine := search.NewSubtitleSearchEngine(
 			*flags.SearchFlags.Query,
 			*flags.SearchFlags.MergeStrategy,
+			query.QueryMetadata{},
 		)
 		results, err := searchEngine.Search(*flags.SearchFlags.Query)
 		if err != nil {

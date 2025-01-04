@@ -29,7 +29,7 @@ var (
 	seasonRegexp = regexp.MustCompile(`(?i)(?:season\s*|s)(\d+)(?:e\d+|x\d+|)`)
 )
 
-func (a *Matcher) Match() (*common.MediaInfo, error) {
+func (m *Matcher) MatchFile() (*common.MediaInfo, error) {
 	// get all files in the current directory that have a supported file type
 	files, err := os.ReadDir(".")
 	if err != nil {

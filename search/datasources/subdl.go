@@ -3,13 +3,17 @@ package datasources
 import (
 	"encoding/json"
 	"io"
+	"net/http"
+	"net/url"
 	"regexp"
 	"slices"
 	"strconv"
+	"strings"
 	"sync"
-	"net/http"
-	"net/url"
 	"trietng/subtk/config"
+	"trietng/subtk/resource/languages"
+	"trietng/subtk/resource/languages/fallback"
+	"trietng/subtk/search/query"
 	"trietng/subtk/search/result"
 )
 
@@ -74,7 +78,6 @@ func (ds *SubdlDataSource) Search() ([]result.SubtitleSearchResult, error) {
 		}
 		// score the results
 		// criteria: download counts
-		//scores := make([]int, len(searchResults))
 		channel := make(chan int, len(searchResults))
 		var wg sync.WaitGroup
 		for _, searchResult := range searchResults {
@@ -112,6 +115,7 @@ func (ds *SubdlDataSource) Search() ([]result.SubtitleSearchResult, error) {
 			searchResults[index].Score = <-channel
 		}
 		// sort the results
+		// stable sort due to concurrency
 		slices.SortStableFunc(searchResults, func(a, b result.SubtitleSearchResult) int {
 			return b.Score - a.Score
 		})
@@ -120,14 +124,24 @@ func (ds *SubdlDataSource) Search() ([]result.SubtitleSearchResult, error) {
 	return []result.SubtitleSearchResult{}, nil
 }
 
-func NewSubdlDataSource(query string) *SubdlDataSource {
+func NewSubdlDataSource(q string, metadata query.QueryMetadata) *SubdlDataSource {
 	ds := &SubdlDataSource{
 		queryValues: url.Values{},
 	}
 	if key, ok := config.GetApiKey(ds.Name()); ok {
 		ds.apiKey = key
 	}
-	ds.queryValues.Add("file_name", query)
-	ds.queryValues.Add("languages", "EN")
+	supportedLanguages := (languages.SubdlLanguagesRepository{}).GetSupportedLanguages()
+	userDefaultLanguages := config.GetDefaultLanguage()
+	defaultLanguage := strings.ToUpper(fallback.DefaultLanguage)
+	if _, ok := supportedLanguages[userDefaultLanguages]; ok {
+		defaultLanguage = strings.ToUpper(userDefaultLanguages)
+	}
+	ds.queryValues.Add("languages", defaultLanguage)
+	if (metadata.QueryType == query.QUERY_RELEASE_NAME) {
+		ds.queryValues.Add("file_name", q)
+	} else {
+		ds.queryValues.Add("film_name", q)
+	}
 	return ds
 }
