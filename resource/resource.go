@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"sync"
 	"time"
@@ -11,11 +12,21 @@ import (
 	"trietng/subtk/resource/errmsg"
 )
 
+// NOTE: no versioning for metadata at the moment
 type Metadata struct {
-	DataType  string
-	Timestamp int64
+	DataType       string
+	Timestamp      int64 // in seconds
+	UpdateInterval int64 // in seconds
 }
 
+const (
+	// default update interval for resources (1 month)
+	UPDATE_DEFAULT_INTERVAL = 2592000 // 30 days
+	// value to use when the update interval is not required
+	UPDATE_NOT_REQUIRED = math.MaxInt64
+	// value to use when the update interval is zero
+	UPDATE_IMMEDIATE = 0
+)
 // organization of resources
 // resources
 // ├── resource_group_1
@@ -33,10 +44,11 @@ var (
 	lock     sync.Mutex
 )
 
-func newMetadata[T any](data *T) *Metadata {
+func newMetadata[T any](data *T, updateInterval int64) *Metadata {
 	return &Metadata{
 		DataType:  fmt.Sprintf("%T", *data),
 		Timestamp: time.Now().Unix(),
+		UpdateInterval: updateInterval,
 	}
 }
 
@@ -98,7 +110,7 @@ func LoadMetadata() (common.CommonSignal, error) {
 	return common.SUBTK_SUCCESS, nil
 }
 
-func SetResource[T any](group, resource string, data T) error {
+func SetResource[T any](group, resource string, data T, updateInterval int64) error {
 	lock.Lock()
 	defer lock.Unlock()
 	if group == "" || group == "metadata" {
@@ -108,10 +120,10 @@ func SetResource[T any](group, resource string, data T) error {
 		return errmsg.ErrInvalidResourceName
 	}
 	if _, ok := metadata[group]; ok {
-		metadata[group][resource] = *newMetadata(&data)
+		metadata[group][resource] = *newMetadata(&data, updateInterval)
 	} else {
 		metadata[group] = make(map[string]Metadata)
-		metadata[group][resource] = *newMetadata(&data)
+		metadata[group][resource] = *newMetadata(&data, updateInterval)
 	}
 	home, _ := os.UserHomeDir()
 	os.MkdirAll(fmt.Sprintf("%s/.subtk/resources/%s", home, group), 0755)
@@ -138,7 +150,7 @@ func SetResource[T any](group, resource string, data T) error {
 	return nil
 }
 
-func GetResource[T any](group, resource string) (*T, bool) {
+func GetResource[T any](group, resource string) (*T, common.ResourceSignal) {
 	lock.Lock()
 	defer lock.Unlock()
 	if group != "" && group != "metadata" && resource != "" {
@@ -148,19 +160,23 @@ func GetResource[T any](group, resource string) (*T, bool) {
 					home, _ := os.UserHomeDir()
 					file, err := os.Open(fmt.Sprintf("%s/.subtk/resources/%s/%s.gob", home, group, resource))
 					if err != nil {
-						return nil, false
+						return nil, common.RESOURCE_ERROR
 					}
 					defer file.Close()
 					decoder := gob.NewDecoder(file)
 					var data T
 					err = decoder.Decode(&data)
 					if err != nil {
-						return nil, false
+						return nil, common.RESOURCE_ERROR
 					}
-					return &data, true
+					// check if the resource is outdated
+					if mr.UpdateInterval != UPDATE_NOT_REQUIRED && time.Now().Unix() - mr.Timestamp > mr.UpdateInterval {
+						return &data, common.RESOURCE_OUTDATED
+					}
+					return &data, common.RESOURCE_OK
 				}
 			}
 		}
 	}
-	return nil, false
+	return nil, common.RESOURCE_NOT_FOUND
 }

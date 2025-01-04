@@ -3,9 +3,9 @@ package common
 type MediaType uint
 
 const (
-	Movie MediaType = iota
+	MOVIE MediaType = iota
 	TV
-	Other
+	OTHER
 )
 
 type MediaInfo struct {
