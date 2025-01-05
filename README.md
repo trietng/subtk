@@ -33,7 +33,7 @@ Configuration file is stored at `~/.subtk/config.json`.Example configuration fil
 
 ## Installation
 
-### Standalone exectutable
+### Standalone executable
 
 Download the executable and place it in your `%PATH%` (Windows-only).
 
