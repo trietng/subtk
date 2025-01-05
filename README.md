@@ -20,9 +20,9 @@ Configuration file is stored at `~/.subtk/config.json`.Example configuration fil
 
 ```json
 {
-    "default_language": "en", // Default language for subtitles
+    "default_language": "en",
     "api_keys": {
-        "subdl": "<API_KEY>", // API key for subdl
+        "subdl": "<API_KEY>",
     }
 }
 ```
