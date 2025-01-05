@@ -53,7 +53,9 @@ func (d *SubtitleDownloader) extractArchive(r io.Reader, mis []common.MediaInfo)
 			}
 			defer rc.Close()
 			ext := filepath.Ext(file.Name)
-			out, err := os.OpenFile(fmt.Sprintf("%s/%s%s", d.Dir, mi.Title, ext), os.O_CREATE|os.O_WRONLY, 0644)
+			subtitleFileName := fmt.Sprintf("%s%s", mi.Title, ext)
+			fmt.Println(subtitleFileName)
+			out, err := os.OpenFile(fmt.Sprintf("%s/%s", d.Dir, subtitleFileName), os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				return err
 			}
@@ -75,7 +77,7 @@ func (d *SubtitleDownloader) Download() error {
 	defer resp.Body.Close()
 	if d.ExtractArchive {
 		matcher := match.SubtitleMatcher{}
-		mis, err := matcher.MatchFiles()
+		mis, err := matcher.MatchFiles(d.Dir)
 		if err != nil {
 			return err
 		}

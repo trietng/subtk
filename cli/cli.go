@@ -22,6 +22,8 @@ func Run(mod string) {
 	// make module lower case
 	mod = strings.ToLower(mod)
 	switch mod {
+	case module.Console:
+		flag.Usage()
 	case module.Config:
 		if *flags.ConfigFlags.ApiKeyList {
 			serialized, _ := json.MarshalIndent(config.GetApiKeys(), "", "  ")

@@ -77,9 +77,9 @@ func (m *SubtitleMatcher) Report() (*common.MediaInfo, error) {
 	return report, nil
 }
 
-func (m *SubtitleMatcher) MatchFiles() ([]common.MediaInfo, error) {
+func (m *SubtitleMatcher) MatchFiles(dir string) ([]common.MediaInfo, error) {
 	// get all files in the current directory that have a supported file type
-	files, err := os.ReadDir(".")
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}

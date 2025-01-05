@@ -2,7 +2,9 @@ package flags
 
 import (
 	"flag"
+	"fmt"
 	"os"
+	"text/tabwriter"
 	"trietng/subtk/cli/module"
 )
 
@@ -33,6 +35,16 @@ var (
 // sets flags for the specified module
 func SetModuleFlags(mod string) {
 	switch mod {
+	case module.Console:
+		flag.Usage = func() {
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
+			defer w.Flush()
+			fmt.Fprintln(w, "Usage: subtk <module> [flags]")
+			fmt.Fprintln(w, "MODULE\tDESCRIPTION")
+			for _, m := range module.Modules {
+				fmt.Fprintf(w, "%s\t%s\n", m, module.ModuleDescriptions[m])
+			}
+		}
 	case module.Config:
 		ConfigFlags.ApiKeyList = flag.Bool("al", false, "list all api keys")
 		ConfigFlags.ApiKeySet = flag.String("as", "", "api key to set <provider>:<api_key>")

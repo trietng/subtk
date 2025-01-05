@@ -15,4 +15,13 @@ var (
 	Match    = Modules[3]
 	Download = Modules[4]
 	Search   = Modules[5]
+	// ModuleDescriptions is a map of module names to their descriptions
+	ModuleDescriptions = map[string]string{
+		Console:  "default module",
+		Config:   "configure subtk",
+		Repair:   "repair subtk",
+		Match:    "match subtitles and generate report",
+		Download: "download subtitles",
+		Search:   "search for subtitles",
+	}
 )
