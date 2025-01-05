@@ -24,7 +24,6 @@ var (
 		HearingImpaired *bool
 	}
 	DownloadFlags struct {
-		Query		   *string
 		Url            *string
 		Destination    *string
 		ExtractArchive *bool
@@ -44,9 +43,11 @@ func SetModuleFlags(mod string) {
 	case module.Search:
 		SearchFlags.Query = flag.String("q", "", "query to search; leave empty for auto search")
 		SearchFlags.MergeStrategy = flag.String("ms", "first", "merge strategy to use when merging search results")
-		SearchFlags.HearingImpaired = flag.Bool("hi", false, "whether to include hearing impaired subtitles")
+		SearchFlags.HearingImpaired = flag.Bool("hi", false, "whether to enforce hearing impaired subtitles")
 	case module.Download:
-		DownloadFlags.Query = flag.String("q", "", "query to search and download; leave empty for auto search")
+		SearchFlags.Query = flag.String("q", "", "query to search and download; leave empty for auto search")
+		SearchFlags.MergeStrategy = flag.String("ms", "first", "merge strategy to use when merging search results")
+		SearchFlags.HearingImpaired = flag.Bool("hi", false, "whether to enforce hearing impaired subtitles")
 		dir, err := os.Getwd()
 		if err != nil {
 			dir = ""

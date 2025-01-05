@@ -2,7 +2,7 @@ package errmsg
 
 import (
 	"fmt"
-	"trietng/subtk/search/datasources"
+	"trietng/subtk/datasources"
 )
 
 var (

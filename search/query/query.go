@@ -10,6 +10,7 @@ const (
 )
 
 type QueryMetadata struct {
-	QueryType QueryType        // type of query
-	MediaType common.MediaType // type of media
+	QueryType       QueryType        // type of query
+	MediaType       common.MediaType // type of media
+	HearingImpaired bool        // whether the subtitles are hearing impaired
 }

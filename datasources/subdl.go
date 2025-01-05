@@ -124,6 +124,10 @@ func (ds *SubdlDataSource) Search() ([]result.SubtitleSearchResult, error) {
 	return []result.SubtitleSearchResult{}, nil
 }
 
+func (ds *SubdlDataSource) VerifyDownloadUrl(url string) bool {
+	return strings.HasPrefix(url, "https://dl.subdl.com")
+}
+
 func NewSubdlDataSource(q string, metadata query.QueryMetadata) *SubdlDataSource {
 	ds := &SubdlDataSource{
 		queryValues: url.Values{},

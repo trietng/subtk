@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-	"trietng/subtk/search/datasources"
+	"trietng/subtk/datasources"
 	"trietng/subtk/search/errmsg"
 	"trietng/subtk/search/merger"
 	"trietng/subtk/search/query"

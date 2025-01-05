@@ -3,13 +3,14 @@ package common
 type MediaType uint
 
 const (
-	MOVIE MediaType = iota
+	NONE MediaType = iota
+	MOVIE
 	TV
-	OTHER
 )
 
 type MediaInfo struct {
-	Title  string
-	Type   MediaType
-	Season int
+	Title   string
+	Type    MediaType
+	Season  int
+	Episode int
 }

@@ -8,14 +8,14 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[MOVIE-0]
-	_ = x[TV-1]
-	_ = x[OTHER-2]
+	_ = x[NONE-0]
+	_ = x[MOVIE-1]
+	_ = x[TV-2]
 }
 
-const _MediaType_name = "MOVIETVOTHER"
+const _MediaType_name = "NONEMOVIETV"
 
-var _MediaType_index = [...]uint8{0, 5, 7, 12}
+var _MediaType_index = [...]uint8{0, 4, 9, 11}
 
 func (i MediaType) String() string {
 	if i >= MediaType(len(_MediaType_index)-1) {
