@@ -35,7 +35,7 @@ Configuration file is stored at `~/.subtk/config.json`.Example configuration fil
 
 ### Standalone exectutable
 
-Download the executable and place it in your `%PATH%`.
+Download the executable and place it in your `%PATH%` (Windows-only).
 
 ### Go installation
 
